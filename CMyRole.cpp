@@ -15,7 +15,7 @@ void CMyRole::Update()
 {
 	if (m_PosX < 0) { m_PosX = 0; };
 	if (m_PosX > 1300) { m_PosX = 1300; };
-	if (m_PosY < 0) { m_PosY = 0; };
+	if (m_PosY < 100) { m_PosY = 100; };
 	if (m_PosY > 1100) { m_PosY = 1100; };
 	m_PosX += m_SpeedX;
 	m_PosY += m_SpeedY;

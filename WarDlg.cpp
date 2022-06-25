@@ -125,7 +125,7 @@ BOOL CWarDlg::OnInitDialog()
 	//GetWindowRect(rect);
 	//point = rect.BottomRight();
 	::SetTimer(this->m_hWnd, 204, 5, NULL);//204号定时器（开始游戏界面）
-	::SetTimer(this->m_hWnd, 3, 100, NULL);//三号定时器（我机飞机子弹）
+	::SetTimer(this->m_hWnd, 3, 100, NULL);//3号定时器（我机飞机子弹）
 	arrow.inint(IDB_BITMAP11, 400, 475);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -217,7 +217,7 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		if (nChar == ' ') {
 			arrow.fire = 1;
-			::SetTimer(this->m_hWnd, 4, 3000, NULL);//三号定时器（我机飞机子弹）
+			::SetTimer(this->m_hWnd, 4, 2000, NULL);//三号定时器（我机飞机子弹）
 		}
 	}
 	//控制飞机
@@ -273,7 +273,7 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 		HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMDC, hBmp);
 		//画背景(滚动)
 		paintBG(hMDC, rollX, rollY);
-		rollY = rollY - 10;
+		rollY = rollY - 5;
 		if (rollY <= 0) rollY = mapY;
 
 		arrow.UpDate();
@@ -350,7 +350,7 @@ void CWarDlg::OnOperateStart()
 	::SetTimer(this->m_hWnd, 1, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
 	::SetTimer(this->m_hWnd, 2, 5, NULL);//二号定时器（碰撞 爆炸）
 	::SetTimer(this->m_hWnd, 4, 5, NULL);//四号定时器（显示）
-	::SetTimer(this->m_hWnd, 5, 5, NULL);//四号定时器 （发射子弹）
+	::SetTimer(this->m_hWnd, 5, 100, NULL);//四号定时器 （发射子弹）
 }
 void CWarDlg::init() {
 	me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
@@ -380,6 +380,14 @@ void CWarDlg::upDate() {
 	me.Update();
 	for (size_t j = 0; j < me.bullets.size(); j++)
 	{
+		CPoint   point;
+		GetCursorPos(&point);
+
+		ScreenToClient(&point);
+
+		if (me.bullets[j].GetPosY() > point.y) {
+			me.bullets[j].setSpeedX((point.x - me.bullets[j].GetPosX()) / 300);
+		}
 		me.bullets[j].Update();
 	}
 
@@ -390,7 +398,6 @@ void CWarDlg::upDate() {
 	for (size_t i = 0; i < enemy.size(); i++)
 	{
 		enemy[i].Update(me.GetPosX() - enemy[i].GetPosX());
-
 		//时不时产生子弹
 		if (rand() % 200 < 5) {
 			Bullet b;
@@ -476,6 +483,9 @@ void CWarDlg::paintBullet(HDC hDC) {
 	for (size_t i = 0; i < me.bullets.size(); i++)
 	{
 		me.bullets[i].Draw(hDC, hMDC, me.bullets[i].GetPosX(), me.bullets[i].GetPosY());
+		if (me.bullets[i].GetPosY() < 10) {
+			me.bullets.erase(me.bullets.begin() + i);
+		}
 	}
 	::DeleteDC(hMDC);
 }
