@@ -51,6 +51,9 @@
     <ClInclude Include="Boom.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Arrow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="War.cpp">
@@ -75,6 +78,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Boom.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Arrow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -120,6 +126,15 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\20.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\AnyConv.com__arrow.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\AnyConv.com__WarOfPlane.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\arrowPlane.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

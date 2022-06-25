@@ -6,6 +6,7 @@
 #include "framework.h"
 #include "War.h"
 #include "WarDlg.h"
+#include "Arrow.h"
 #include "afxdialogex.h"
 #include "EasySize.h"
 
@@ -86,6 +87,7 @@ ON_COMMAND(ID_OPERATE_START, &CWarDlg::OnOperateStart)
 ON_WM_TIMER()
 ON_WM_KEYUP()
 ON_WM_SIZE()
+ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 
@@ -122,6 +124,9 @@ BOOL CWarDlg::OnInitDialog()
 	//INIT_EASYSIZE;
 	//GetWindowRect(rect);
 	//point = rect.BottomRight();
+	::SetTimer(this->m_hWnd, 204, 5, NULL);//204号定时器（开始游戏界面）
+	::SetTimer(this->m_hWnd, 3, 100, NULL);//三号定时器（我机飞机子弹）
+	arrow.inint(IDB_BITMAP11, 400, 475);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -182,31 +187,53 @@ void CWarDlg::OnHelpAbout()
 	dlg.DoModal();
 }
 
+//鼠标移动
+void CWarDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if (state == 0 && arrow.fire == 0) {
+		arrow.aimX = point.x;
+		if (arrow.aimX >= 1200) {
+			arrow.aimX = 1200;
+		}
+	}
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
 
 //按键设置
 void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	//开始游戏
-	if (state == 0) {
-		state = 1;
-		OnOperateStart();
-	}
-	if (state == 1 && nChar == 'R') {
-		state = 0;
+	//控制箭头
+	if (state == 0 && arrow.fire == 0) {
+		if (nChar == 'W') {
+			if(arrow.aimY > 475)
+			arrow.aimY -= 130;
+		}
+		if (nChar == 'S') {
+			if(arrow.aimY < 735)
+			arrow.aimY += 130;
+		}
+		if (nChar == ' ') {
+			arrow.fire = 1;
+			::SetTimer(this->m_hWnd, 4, 3000, NULL);//三号定时器（我机飞机子弹）
+		}
 	}
 	//控制飞机
-	if (nChar == 'W') {
-		me.setSpeedY(-2);
-	}
-	if (nChar == 'S') {
-		me.setSpeedY(2);
-	}
-	if (nChar == 'A') {
-		me.setSpeedX(-4);
-	}
-	if (nChar == 'D') {
-		me.setSpeedX(4);
+	if (state == 1) {
+		if (nChar == 'W') {
+			me.setSpeedY(-2);
+		}
+		if (nChar == 'S') {
+			me.setSpeedY(2);
+		}
+		if (nChar == 'A') {
+			me.setSpeedX(-4);
+		}
+		if (nChar == 'D') {
+			me.setSpeedX(4);
+		}
 	}
 	CDialogEx::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -233,6 +260,82 @@ void CWarDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 *	开始 开定时器，刷新绘制画面
 *	结束 gameOver()
 */
+
+void CWarDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	//开始界面
+	if (nIDEvent == 204) {
+		//屏幕DC创建兼容内存DC
+		HDC hDC = ::GetDC(this->m_hWnd);
+		HDC hMDC = ::CreateCompatibleDC(hDC);
+		//内存位图
+		HBITMAP hBmp = ::CreateCompatibleBitmap(hDC, mapX, mapY);
+		HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMDC, hBmp);
+		//画背景(滚动)
+		paintBG(hMDC, rollX, rollY);
+		rollY = rollY - 10;
+		if (rollY <= 0) rollY = mapY;
+
+		arrow.UpDate();
+		arrow.Draw(hMDC);
+
+		//画界面（滚动）
+		HDC hMDCS = ::CreateCompatibleDC(hDC);
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP10, IMAGE_BITMAP, 0, 0, NULL);
+		::SelectObject(hMDCS, hBmpMap);
+		::TransparentBlt(hMDC, 200, 100, 1000, 800, hMDCS, 0, 0, 400, 300, RGB(0, 0, 0));
+		//画子弹(成功后)
+		HDC hMDCB = ::CreateCompatibleDC(hDC);
+		for (size_t i = 0; i < arrow.bullets.size(); i++)
+		{
+			arrow.bullets[i].Draw(hMDC, hMDCB, arrow.bullets[i].GetPosX(), arrow.bullets[i].GetPosY());
+		}
+
+		::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
+		::DeleteObject(hBmpMap);
+		::ReleaseDC(this->m_hWnd, hDC);
+		::DeleteDC(hMDCS);
+		::DeleteDC(hMDCB);
+		::DeleteDC(hMDC);
+		::DeleteObject(hBmp);
+		::DeleteObject(hOldBmp);
+	}
+	
+	if (nIDEvent == 3) {
+		if (arrow.fire == 1) {
+			arrow.aimX = 1100;
+			arrow.BulletFire(IDB_BITMAP5);
+		}
+	}
+
+	if (nIDEvent == 4) {
+		KillTimer(3);
+		KillTimer(204);
+		state = 1;
+		OnOperateStart();
+		KillTimer(4);
+	}
+
+	//游戏界面
+	if (state == 1) {
+		if (nIDEvent == 1) {
+			upDate();
+			paint();
+		}
+		if (nIDEvent == 2) {
+			crash();
+			for (size_t i = 0; i < booms.size(); i++)
+			{
+				booms[i].setMove(booms[i].getMove() + 1);
+			}
+		}
+		if (nIDEvent == 5) {
+			me.BulletFire(IDB_BITMAP5);
+		}
+	}
+	CDialogEx::OnTimer(nIDEvent);
+}
+
 void CWarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
@@ -246,35 +349,11 @@ void CWarDlg::OnOperateStart()
 	credits = 0;
 	::SetTimer(this->m_hWnd, 1, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
 	::SetTimer(this->m_hWnd, 2, 5, NULL);//二号定时器（碰撞 爆炸）
-	::SetTimer(this->m_hWnd, 3, 100, NULL);//三号定时器（我机飞机子弹）
 	::SetTimer(this->m_hWnd, 4, 5, NULL);//四号定时器（显示）
+	::SetTimer(this->m_hWnd, 5, 5, NULL);//四号定时器 （发射子弹）
 }
-
 void CWarDlg::init() {
 	me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
-}
-
-void CWarDlg::OnTimer(UINT_PTR nIDEvent)
-{
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if (nIDEvent == 1) {
-		upDate();
-		paint();
-	}
-	if (nIDEvent == 2) {
-		crash();
-		for (size_t i = 0; i < booms.size(); i++)
-		{
-			booms[i].setMove(booms[i].getMove() + 1);
-		}
-	}
-	if (nIDEvent == 3) {
-		me.BulletFire(IDB_BITMAP5);
-	}
-	if (nIDEvent == 4) {
-		
-	}
-	CDialogEx::OnTimer(nIDEvent);
 }
 
 void CWarDlg::gameOver() {
@@ -297,7 +376,6 @@ void CWarDlg::gameOver() {
 }
 
 //线程1的更新机制 用来实时计算数值
-
 void CWarDlg::upDate() {
 	me.Update();
 	for (size_t j = 0; j < me.bullets.size(); j++)
@@ -323,7 +401,6 @@ void CWarDlg::upDate() {
 }
 
 //线程1的绘制机制 用来实时画图
-
 void CWarDlg::paint() {
 	//屏幕DC创建兼容内存DC
 	HDC hDC = ::GetDC(this->m_hWnd);
@@ -386,7 +463,6 @@ void CWarDlg::paintEnemy(HDC hDC) {
 	}
 	::DeleteDC(hMDC);
 }
-
 void CWarDlg::paintBullet(HDC hDC) {
 	HDC hMDC = ::CreateCompatibleDC(hDC);
 	//使用已经有的
@@ -403,8 +479,6 @@ void CWarDlg::paintBullet(HDC hDC) {
 	}
 	::DeleteDC(hMDC);
 }
-
-//绘制背景版
 void CWarDlg::paintBG(HDC hDC, int x, int y) {
 	//创建位图并调用函数LoadImage装载图
 	HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP4, IMAGE_BITMAP, 0, 0, NULL);
@@ -417,8 +491,6 @@ void CWarDlg::paintBG(HDC hDC, int x, int y) {
 	::DeleteDC(hMDC);
 	::DeleteObject(hBmpMap);
 }
-
-//绘制分数
 void CWarDlg::paintCredits(HDC hDC) {
 	CString s;
 	s.Format("积分%d", credits);
@@ -430,7 +502,6 @@ void CWarDlg::paintCredits(HDC hDC) {
 }
 
 //线程2的碰撞机制
-
 void CWarDlg::crash() {
 	//敌人撞飞机
 	for (size_t i = 0; i < enemy.size(); i++)
@@ -460,7 +531,6 @@ void CWarDlg::crash() {
 		}
 	}
 }
-
 BOOL CWarDlg::judgeEnemy(RECT r) {
 	for (size_t i = 0; i < me.bullets.size(); i++)
 	{
@@ -473,7 +543,6 @@ BOOL CWarDlg::judgeEnemy(RECT r) {
 	}
 	return FALSE;
 }
-
 BOOL CWarDlg::judgeBullet(POINT a) {
 	if (PtInRect(&me.m_Rect, a)
 		|| PtInRect(&me.m_Rect, { a.x + 20, a.y + 20 })
@@ -482,7 +551,6 @@ BOOL CWarDlg::judgeBullet(POINT a) {
 		) return TRUE;
 	return FALSE;
 }
-
 BOOL CWarDlg::judgeMe(const RECT* e) {
 	if (PtInRect(e, { me.GetPosX(), me.GetPosY()})
 		|| PtInRect(e, { me.GetPosX() + 50, me.GetPosY() })

@@ -184,6 +184,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnyThing.h" />
+    <ClInclude Include="Arrow.h" />
     <ClInclude Include="Boom.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="CEnemy.h" />
@@ -198,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnyThing.cpp" />
+    <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Boom.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CEnemy.cpp" />
@@ -219,6 +221,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\20.bmp" />
+    <Image Include="res\AnyConv.com__arrow.bmp" />
+    <Image Include="res\AnyConv.com__WarOfPlane.bmp" />
+    <Image Include="res\arrowPlane.bmp" />
     <Image Include="res\backGround.bmp" />
     <Image Include="res\bitmap2.bmp" />
     <Image Include="res\bitmap4.bmp" />

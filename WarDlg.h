@@ -8,6 +8,7 @@
 #include "Boom.h"
 #include "Bullet.h"
 #include "EasySize.h"
+#include "Arrow.h"
 #include <vector>
 
 // CWarDlg 对话框
@@ -16,13 +17,14 @@ class CWarDlg : public CDialogEx
 	//DECLARE_EASYSIZE
 private:
 	CMyRole me;
+	Arrow arrow;
 	std::vector<Boom> booms;
 	std::vector<CEnemy> enemy;
 	std::vector<Bullet> bullets;
 public:
 	//CRect rect;
 	//POINT point;
-	int state;//0为开始界面, 1为启动, 2为没了
+	int state;//0为开始界面, 1为启动, 4为启动中途
 	int mapY;
 	int mapX;
 	int credits;
@@ -72,4 +74,5 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };
