@@ -137,5 +137,14 @@
     <Image Include="res\arrowPlane.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\ui.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\uii.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\numm.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -232,7 +232,10 @@
     <Image Include="res\explosion.BMP" />
     <Image Include="res\Good.ico" />
     <Image Include="res\me.bmp" />
+    <Image Include="res\numm.bmp" />
     <Image Include="res\test.bmp" />
+    <Image Include="res\ui.bmp" />
+    <Image Include="res\uii.bmp" />
     <Image Include="res\War.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

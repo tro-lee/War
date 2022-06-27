@@ -124,8 +124,8 @@ BOOL CWarDlg::OnInitDialog()
 	//INIT_EASYSIZE;
 	//GetWindowRect(rect);
 	//point = rect.BottomRight();
-	::SetTimer(this->m_hWnd, 204, 5, NULL);//204号定时器（开始游戏界面）
-	::SetTimer(this->m_hWnd, 3, 100, NULL);//3号定时器（我机飞机子弹）
+	::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
+	::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
 	arrow.inint(IDB_BITMAP11, 400, 475);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -217,7 +217,7 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		if (nChar == ' ') {
 			arrow.fire = 1;
-			::SetTimer(this->m_hWnd, 4, 2000, NULL);//三号定时器（我机飞机子弹）
+			::SetTimer(this->m_hWnd, 204, 2000, NULL);//三号定时器（我机飞机子弹）
 		}
 	}
 	//控制飞机
@@ -234,6 +234,19 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		if (nChar == 'D') {
 			me.setSpeedX(4);
 		}
+	}
+	//控制结束
+	if (state == 2) {
+		state = 0;
+		KillTimer(301);
+		::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
+		::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
+		arrow.inint(IDB_BITMAP11, 400, 475);
+
+		arrow.bullets.clear();
+		me.bullets.clear();
+		bullets.clear();
+		enemy.clear();
 	}
 	CDialogEx::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -264,52 +277,55 @@ void CWarDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	//开始界面
-	if (nIDEvent == 204) {
-		//屏幕DC创建兼容内存DC
-		HDC hDC = ::GetDC(this->m_hWnd);
-		HDC hMDC = ::CreateCompatibleDC(hDC);
-		//内存位图
-		HBITMAP hBmp = ::CreateCompatibleBitmap(hDC, mapX, mapY);
-		HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMDC, hBmp);
-		//画背景(滚动)
-		paintBG(hMDC, rollX, rollY);
-		rollY = rollY - 5;
-		if (rollY <= 0) rollY = mapY;
+	if (state == 0) {
+		if (nIDEvent == 201) {
+			//屏幕DC创建兼容内存DC
+			HDC hDC = ::GetDC(this->m_hWnd);
+			HDC hMDC = ::CreateCompatibleDC(hDC);
+			//内存位图
+			HBITMAP hBmp = ::CreateCompatibleBitmap(hDC, mapX, mapY);
+			HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMDC, hBmp);
+			//画背景(滚动)
+			paintBG(hMDC, rollX, rollY);
+			rollY = rollY - 5;
+			if (rollY <= 0) rollY = mapY;
 
-		arrow.UpDate();
-		arrow.Draw(hMDC);
+			arrow.UpDate();
+			arrow.Draw(hMDC);
 
-		//画界面（滚动）
-		HDC hMDCS = ::CreateCompatibleDC(hDC);
-		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP10, IMAGE_BITMAP, 0, 0, NULL);
-		::SelectObject(hMDCS, hBmpMap);
-		::TransparentBlt(hMDC, 200, 100, 1000, 800, hMDCS, 0, 0, 400, 300, RGB(0, 0, 0));
-		//画子弹(成功后)
-		HDC hMDCB = ::CreateCompatibleDC(hDC);
-		for (size_t i = 0; i < arrow.bullets.size(); i++)
-		{
-			arrow.bullets[i].Draw(hMDC, hMDCB, arrow.bullets[i].GetPosX(), arrow.bullets[i].GetPosY());
+			//画界面（滚动）
+			HDC hMDCS = ::CreateCompatibleDC(hDC);
+			HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP10, IMAGE_BITMAP, 0, 0, NULL);
+			::SelectObject(hMDCS, hBmpMap);
+			::TransparentBlt(hMDC, 200, 100, 1000, 800, hMDCS, 0, 0, 400, 300, RGB(0, 0, 0));
+			//画子弹(成功后)
+			HDC hMDCB = ::CreateCompatibleDC(hDC);
+			for (size_t i = 0; i < arrow.bullets.size(); i++)
+			{
+				arrow.bullets[i].Draw(hMDC, hMDCB, arrow.bullets[i].GetPosX(), arrow.bullets[i].GetPosY());
+			}
+
+			::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
+			::DeleteObject(hBmpMap);
+			::ReleaseDC(this->m_hWnd, hDC);
+			::DeleteDC(hMDCS);
+			::DeleteDC(hMDCB);
+			::DeleteDC(hMDC);
+			::DeleteObject(hBmp);
+			::DeleteObject(hOldBmp);
+		}
+		if (nIDEvent == 203) {
+			if (arrow.fire == 1) {
+				arrow.aimX = 1100;
+				arrow.BulletFire(IDB_BITMAP5);
+			}
 		}
 
-		::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
-		::DeleteObject(hBmpMap);
-		::ReleaseDC(this->m_hWnd, hDC);
-		::DeleteDC(hMDCS);
-		::DeleteDC(hMDCB);
-		::DeleteDC(hMDC);
-		::DeleteObject(hBmp);
-		::DeleteObject(hOldBmp);
 	}
 	
-	if (nIDEvent == 3) {
-		if (arrow.fire == 1) {
-			arrow.aimX = 1100;
-			arrow.BulletFire(IDB_BITMAP5);
-		}
-	}
-
-	if (nIDEvent == 4) {
-		KillTimer(3);
+	if (nIDEvent == 204) {
+		KillTimer(201);
+		KillTimer(203);
 		KillTimer(204);
 		state = 1;
 		OnOperateStart();
@@ -318,19 +334,52 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 
 	//游戏界面
 	if (state == 1) {
-		if (nIDEvent == 1) {
+		if (nIDEvent == 101) {
 			upDate();
 			paint();
 		}
-		if (nIDEvent == 2) {
+		if (nIDEvent == 102) {
 			crash();
 			for (size_t i = 0; i < booms.size(); i++)
 			{
 				booms[i].setMove(booms[i].getMove() + 1);
 			}
 		}
-		if (nIDEvent == 5) {
+		if (nIDEvent == 103) {
 			me.BulletFire(IDB_BITMAP5);
+		}
+	}
+
+	//结束界面
+	if (state == 2) {
+
+		if (nIDEvent == 301) {
+			//屏幕DC创建兼容内存DC
+			HDC hDC = ::GetDC(this->m_hWnd);
+			HDC hMDC = ::CreateCompatibleDC(hDC);
+			//内存位图
+			HBITMAP hBmp = ::CreateCompatibleBitmap(hDC, mapX, mapY);
+			HBITMAP hOldBmp = (HBITMAP)::SelectObject(hMDC, hBmp);
+			//画背景(滚动)
+			paintBG(hMDC, rollX, rollY);
+			rollY = rollY - 4;
+			if (rollY <= 0) rollY = mapY;
+
+			HDC hMDCS = ::CreateCompatibleDC(hDC);
+			HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP13, IMAGE_BITMAP, 0, 0, NULL);
+			::SelectObject(hMDCS, hBmpMap);
+			::TransparentBlt(hMDC, 100, 300, 500, 400, hMDCS, 0, 0, 1200, 500, RGB(1, 1, 1));
+			//贴数字
+			paintMath(hMDC, top, 600, 320);
+			paintMath(hMDC, credits, 600, 530);
+
+			::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
+			::DeleteObject(hBmpMap);
+			::ReleaseDC(this->m_hWnd, hDC);
+			::DeleteDC(hMDCS);
+			::DeleteDC(hMDC);
+			::DeleteObject(hBmp);
+			::DeleteObject(hOldBmp);
 		}
 	}
 	CDialogEx::OnTimer(nIDEvent);
@@ -347,54 +396,72 @@ void CWarDlg::OnOperateStart()
 	// TODO: 在此添加命令处理程序代码
 	init();
 	credits = 0;
-	::SetTimer(this->m_hWnd, 1, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
-	::SetTimer(this->m_hWnd, 2, 5, NULL);//二号定时器（碰撞 爆炸）
-	::SetTimer(this->m_hWnd, 4, 5, NULL);//四号定时器（显示）
-	::SetTimer(this->m_hWnd, 5, 100, NULL);//四号定时器 （发射子弹）
+	showCredits = 0;
+	::SetTimer(this->m_hWnd, 101, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
+	::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
+	::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
 }
 void CWarDlg::init() {
 	me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
 }
 
 void CWarDlg::gameOver() {
-	KillTimer(1);
-	KillTimer(2);
-	KillTimer(3);
-	//画出GAMEOVER
-	HDC hdc = ::GetDC(this->m_hWnd);
-	SetTextColor(hdc, RGB(255, 0, 0));
-	SetBkMode(hdc, TRANSPARENT);
-	RECT a = { 0, 0, mapX,mapY };
-	DrawText(hdc, _T("GAME OVER"), strlen("GAME OVER"), &a,
-		DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+	//我机爆炸
 	Boom b;
 	b.Init(IDB_BITMAP6, me.GetPosX(), me.GetPosY());
-	HDC hMDC = ::CreateCompatibleDC(hdc);
-	b.Draw(hdc, hMDC, me.GetPosX(), me.GetPosY());
-	::DeleteDC(hMDC);
-	::ReleaseDC(this->m_hWnd, hdc);
+	//把游戏界面关掉
+	KillTimer(101);
+	KillTimer(102);
+	KillTimer(103);
+	//开启结算页面
+	state = 2;
+
+	//读写最高分
+	CFile file;
+	file.Open("./data/top.txt", CFile::modeReadWrite, NULL);
+	int len = file.GetLength();
+	char *b1 = new char(len + 1);
+	file.Read(b1, len);
+	file.Close();
+	top = _ttoi(_T(b1));
+	CString c;
+	if (credits > top) {
+		CFile::Remove("./data/top.txt");
+		CFile files;
+		files.Open("./data/top.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		c.Format("%d", credits);
+		files.Write(c, c.GetLength());
+		files.Close();
+		top = credits;
+	}
+
+	::SetTimer(this->m_hWnd, 301, 5, NULL);//301号定时器（画积分）
 }
 
 //线程1的更新机制 用来实时计算数值
 void CWarDlg::upDate() {
+	//我机计算
 	me.Update();
+
+	//我机子弹
 	for (size_t j = 0; j < me.bullets.size(); j++)
 	{
 		CPoint   point;
 		GetCursorPos(&point);
-
 		ScreenToClient(&point);
-
-		if (me.bullets[j].GetPosY() > point.y) {
+		if (me.bullets[j].GetPosY() > me.GetPosY() - 100) {
 			me.bullets[j].setSpeedX((point.x - me.bullets[j].GetPosX()) / 300);
 		}
 		me.bullets[j].Update();
 	}
-
+	
+	//敌机子弹
 	for (size_t j = 0; j < bullets.size(); j++)
 	{
 		bullets[j].Update();
 	}
+
+	//敌机
 	for (size_t i = 0; i < enemy.size(); i++)
 	{
 		enemy[i].Update(me.GetPosX() - enemy[i].GetPosX());
@@ -510,7 +577,24 @@ void CWarDlg::paintCredits(HDC hDC) {
 	DrawText(hDC, s, s.GetLength(), &a,
 		DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 }
+void CWarDlg::paintMath(HDC hDC, int num, int x, int y) {
+	CString a;
+	a.Format("%d", num);
+	int len = a.GetLength();
+	
+	for (size_t i = 0; i < len; i++)
+	{
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP14, IMAGE_BITMAP, 0, 0, NULL);
+		HDC hMDC = ::CreateCompatibleDC(hDC);
+		::SelectObject(hMDC, hBmpMap);
 
+		int j = a[i] - '0';
+		
+		::TransparentBlt(hDC, x + 120 * i, y, 100, 100, hMDC, 120 * j, 0, 120, 120, RGB(1, 1, 1));
+		::DeleteDC(hMDC);
+		::DeleteObject(hBmpMap);
+	}
+}
 //线程2的碰撞机制
 void CWarDlg::crash() {
 	//敌人撞飞机

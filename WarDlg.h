@@ -28,6 +28,8 @@ public:
 	int mapY;
 	int mapX;
 	int credits;
+	int showCredits;
+	int top;
 	int rollX;
 	int rollY;
 	void paintBG(HDC hdc, int x, int y);
@@ -35,6 +37,7 @@ public:
 	void paintBullet(HDC hdc);
 	void paintCredits(HDC hdc);
 	void paintBoom(HDC hdc);
+	void paintMath(HDC hdc, int a, int x, int y);
 	void paint();
 	void init();
 	void upDate();
