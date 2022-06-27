@@ -237,16 +237,18 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 	//控制结束
 	if (state == 2) {
-		state = 0;
-		KillTimer(301);
-		::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
-		::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
-		arrow.inint(IDB_BITMAP11, 400, 475);
+		if (nChar == ' ') {
+			state = 0;
+			KillTimer(301);
+			::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
+			::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
+			arrow.inint(IDB_BITMAP11, 400, 475);
 
-		arrow.bullets.clear();
-		me.bullets.clear();
-		bullets.clear();
-		enemy.clear();
+			arrow.bullets.clear();
+			me.bullets.clear();
+			bullets.clear();
+			enemy.clear();
+		}
 	}
 	CDialogEx::OnKeyDown(nChar, nRepCnt, nFlags);
 }
@@ -396,7 +398,7 @@ void CWarDlg::OnOperateStart()
 	// TODO: 在此添加命令处理程序代码
 	init();
 	credits = 0;
-	showCredits = 0;
+	level = 1;
 	::SetTimer(this->m_hWnd, 101, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
 	::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
 	::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
@@ -465,12 +467,7 @@ void CWarDlg::upDate() {
 	for (size_t i = 0; i < enemy.size(); i++)
 	{
 		enemy[i].Update(me.GetPosX() - enemy[i].GetPosX());
-		//时不时产生子弹
-		if (rand() % 200 < 5) {
-			Bullet b;
-			b.Init(IDB_BITMAP5, enemy[i].GetPosX() + 25, enemy[i].GetPosY() + 25, enemy[i].GetSpeedY(), me.GetPosX() - enemy[i].GetPosX());
-			bullets.push_back(b);
-		}
+		levelBullet(enemy[i]);
 	}
 }
 
@@ -497,7 +494,8 @@ void CWarDlg::paint() {
 	paintBullet(hMDC);
 	//画爆炸
 	paintBoom(hMDC);
-
+	//画关卡
+	paintMath(hMDC, level, 20, 50);
 	//最后绘制
 	::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
 	::ReleaseDC(this->m_hWnd, hDC);
@@ -529,13 +527,35 @@ void CWarDlg::paintEnemy(HDC hDC) {
 			enemy.erase(enemy.begin() + i);
 		}
 	}
-	//生成新的
-	if (rand() % 500 < 5) {
+	levelEnemy();
+	::DeleteDC(hMDC);
+}
+void CWarDlg::levelEnemy() {
+	if (level < 3) level = credits / 1000 + 1;
+	//生成新的敌机 等级一
+	if (rand() % 500 < (4 - level)) {
 		CEnemy a;
-		a.Init(IDB_BITMAP3);
+		a.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 100, 50, FALSE);
 		enemy.push_back(a);
 	}
-	::DeleteDC(hMDC);
+	if (rand() % 500 < (level + 1)) {
+		CEnemy a;
+		a.Init(IDB_BITMAP15, 0, 15, 2, 100, 50, FALSE);
+		enemy.push_back(a);
+	}
+	if (rand() % 500 < level) {
+		CEnemy a;
+		a.Init(IDB_BITMAP16, 0, rand() % 3 + 3, 50, 200, 100, FALSE);
+		enemy.push_back(a);
+	}
+}
+void CWarDlg::levelBullet(CEnemy a) {
+	//时不时产生子弹
+	if (rand() % 200 < (a.credit / 10 + level)) {
+		Bullet b;
+		b.Init(IDB_BITMAP5, a.GetPosX() + a.size / 2, a.GetPosY() + a.size, a.GetSpeedY(), me.GetPosX() - a.GetPosX());
+		bullets.push_back(b);
+	}
 }
 void CWarDlg::paintBullet(HDC hDC) {
 	HDC hMDC = ::CreateCompatibleDC(hDC);
@@ -573,7 +593,7 @@ void CWarDlg::paintCredits(HDC hDC) {
 	s.Format("积分%d", credits);
 	SetTextColor(hDC, RGB(255, 0, 0));
 	SetBkMode(hDC, TRANSPARENT);
-	RECT a = { 0, 0, 200, 100};
+	RECT a = { 0, 0, 100, 400};
 	DrawText(hDC, s, s.GetLength(), &a,
 		DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 }
@@ -610,10 +630,14 @@ void CWarDlg::crash() {
 	{
 		if (judgeEnemy(enemy[i].m_Rect)) {
 			Boom b;
-			b.Init(IDB_BITMAP6, enemy[i].GetPosX(), enemy[i].GetPosY());
+			b.Init(IDB_BITMAP6, enemy[i].GetPosX() + enemy[i].size / 2, enemy[i].GetPosY() + enemy[i].size / 2);
 			booms.push_back(b);
-			credits += 100;
-			enemy.erase(enemy.begin() + i);
+
+			enemy[i].hp--;
+			if (enemy[i].hp == 0) {
+				credits += enemy[i].credit;
+				enemy.erase(enemy.begin() + i);
+			}
 		}
 	}
 	//碰撞子弹

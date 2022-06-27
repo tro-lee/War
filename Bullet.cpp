@@ -6,7 +6,7 @@ void Bullet::Init(UINT uid, int x, int y, int speedY, int speedX)
 	m_PosX = x;
 	m_PosY = y;
 	m_SpeedY = rand() % 3 + 5 + speedY;
-	m_SpeedX = speedX % 5;
+	m_SpeedX = speedX / 100;
 	m_Rect = { 0, 0, 20, 20 };
 }
 

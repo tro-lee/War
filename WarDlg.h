@@ -24,14 +24,16 @@ private:
 public:
 	//CRect rect;
 	//POINT point;
+	int level;
 	int state;//0为开始界面, 1为启动, 4为启动中途
 	int mapY;
 	int mapX;
 	int credits;
-	int showCredits;
 	int top;
 	int rollX;
 	int rollY;
+	void levelEnemy();
+	void levelBullet(CEnemy a);
 	void paintBG(HDC hdc, int x, int y);
 	void paintEnemy(HDC hdc);
 	void paintBullet(HDC hdc);

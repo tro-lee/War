@@ -146,5 +146,11 @@
     <Image Include="res\numm.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\enemyW.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\enemyM.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

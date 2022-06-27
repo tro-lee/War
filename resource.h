@@ -22,6 +22,8 @@
 #define IDB_BITMAP12                    146
 #define IDB_BITMAP13                    147
 #define IDB_BITMAP14                    148
+#define IDB_BITMAP15                    149
+#define IDB_BITMAP16                    150
 #define ID_HELP_ABOUT                   32771
 #define ID_OPERATE_BITMAP               32772
 #define ID_OPERATE_TRANSPARENT1         32773
@@ -33,7 +35,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        149
+#define _APS_NEXT_RESOURCE_VALUE        151
 #define _APS_NEXT_COMMAND_VALUE         32777
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101

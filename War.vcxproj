@@ -229,6 +229,8 @@
     <Image Include="res\bitmap4.bmp" />
     <Image Include="res\bomb1.bmp" />
     <Image Include="res\enemy.bmp" />
+    <Image Include="res\enemyM.bmp" />
+    <Image Include="res\enemyW.bmp" />
     <Image Include="res\explosion.BMP" />
     <Image Include="res\Good.ico" />
     <Image Include="res\me.bmp" />
