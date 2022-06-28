@@ -51,7 +51,7 @@ void Admin::load(CMyRole &a)
 void Admin::save(std::vector<CEnemy> a)
 {
 	CFile file;
-	file.Open("D:\\StudyProject\\War\\Debug\\enemy.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+	file.Open("./Debug/enemy.txt", CFile::modeCreate | CFile::modeWrite, NULL);
 
 	CString c;
 
@@ -69,7 +69,7 @@ void Admin::save(std::vector<CEnemy> a)
 void Admin::load(std::vector<CEnemy>& a)
 {
 	CFile file;
-	file.Open("D:\\StudyProject\\War\\Debug\\enemy.txt", CFile::modeReadWrite, NULL);
+	file.Open("./Debug/enemy.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();
 	char* b1 = new char[len + 1];
 	file.Read(b1, file.GetLength());
@@ -105,7 +105,7 @@ void Admin::load(std::vector<CEnemy>& a)
 
 int Admin::loadEnemy() {
 	CFile file;
-	file.Open("D:\\StudyProject\\War\\Debug\\enemy.txt", CFile::modeReadWrite, NULL);
+	file.Open("./Debug/enemy.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();
 	char* b1 = new char[len + 1];
 	file.Read(b1, file.GetLength());
@@ -131,7 +131,7 @@ int Admin::loadEnemy() {
 
 void Admin::save(int credits, int level) {
 	CFile file;
-	file.Open("D:\\StudyProject\\War\\Debug\\others.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+	file.Open("./Debug/others.txt", CFile::modeCreate | CFile::modeWrite, NULL);
 	CString c;
 	c.Format("%d %d", credits, level);
 
@@ -142,7 +142,7 @@ void Admin::save(int credits, int level) {
 void Admin::load(int &credits, int &level)
 {
 	CFile file;
-	file.Open("D:\\StudyProject\\War\\Debug\\others.txt", CFile::modeReadWrite, NULL);
+	file.Open("./Debug/others.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();
 	char* b1 = new char[len + 1];
 	file.Read(b1, file.GetLength());
