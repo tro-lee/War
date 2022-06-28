@@ -5,6 +5,7 @@ private:
 
 public:
 	HBITMAP m_hBmp; //装载图片
+	UINT uid;
 	int m_PosX, m_PosY; //坐标
 	int m_SpeedX, m_SpeedY; //速度
 	RECT m_Rect; //碰撞矩形

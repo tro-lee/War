@@ -3,6 +3,7 @@
 
 void CMyRole::Init(UINT uiID, int x, int y)
 {
+	uid = uiID;
 	m_hBmp = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)uiID, IMAGE_BITMAP, 0, 0, NULL);
 	m_PosX = x;
 	m_PosY = y;

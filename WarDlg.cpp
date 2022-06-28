@@ -9,6 +9,7 @@
 #include "Arrow.h"
 #include "afxdialogex.h"
 #include "EasySize.h"
+#include "Admin.h"
 
 //BEGIN_EASYSIZE_MAP(CWarDlg)
 //	EASYSIZE(IDD_WAR_DIALOG, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, 0)
@@ -88,6 +89,7 @@ ON_WM_TIMER()
 ON_WM_KEYUP()
 ON_WM_SIZE()
 ON_WM_MOUSEMOVE()
+ON_WM_SYSKEYDOWN()
 END_MESSAGE_MAP()
 
 
@@ -127,6 +129,7 @@ BOOL CWarDlg::OnInitDialog()
 	::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
 	::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
 	arrow.inint(IDB_BITMAP11, 400, 475);
+	select = 0;
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -208,12 +211,18 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	//控制箭头
 	if (state == 0 && arrow.fire == 0) {
 		if (nChar == 'W') {
-			if(arrow.aimY > 475)
-			arrow.aimY -= 130;
+			if (arrow.aimY > 475)
+			{
+				select--;
+				arrow.aimY -= 130;
+			}
 		}
 		if (nChar == 'S') {
-			if(arrow.aimY < 735)
-			arrow.aimY += 130;
+			if (arrow.aimY < 735)
+			{
+				select++;
+				arrow.aimY += 130;
+			}
 		}
 		if (nChar == ' ') {
 			arrow.fire = 1;
@@ -234,6 +243,15 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		if (nChar == 'D') {
 			me.setSpeedX(4);
 		}
+		if (nChar == 'P') {
+			stopState = !stopState;
+			if(stopState) {
+				stop();
+			}
+			else {
+				start();
+			}
+		}
 	}
 	//控制结束
 	if (state == 2) {
@@ -251,6 +269,18 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 	}
 	CDialogEx::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+//存档机制
+void CWarDlg::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	if(state == 1 && nChar == 'P') {
+		stop();
+		admin.save(me);
+		admin.save(enemy);
+		admin.save(credits, level);
+	}
+	CDialogEx::OnSysKeyDown(nChar, nRepCnt, nFlags);
 }
 void CWarDlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
@@ -396,17 +426,47 @@ void CWarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 void CWarDlg::OnOperateStart()
 {
 	// TODO: 在此添加命令处理程序代码
-	init();
-	credits = 0;
-	level = 1;
-	::SetTimer(this->m_hWnd, 101, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
-	::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
-	::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
+	if (select == 0) {
+		init();
+		credits = 0;
+		level = 1;
+		stopState = FALSE;
+		::SetTimer(this->m_hWnd, 101, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
+		::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
+		::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
+	}
+	if (select == 1) {
+		int a = admin.loadEnemy();
+		for (size_t i = 0; i < a; i++)
+		{
+			CEnemy en;
+			en.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 100, 50, FALSE);
+			enemy.push_back(en);
+		}
+		admin.load(enemy);
+		me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
+		admin.load(me);
+		admin.load(credits, level);
+
+		stopState = FALSE;
+		::SetTimer(this->m_hWnd, 101, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
+		::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
+		::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
+	}
 }
 void CWarDlg::init() {
 	me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
 }
-
+void CWarDlg::stop() {
+	KillTimer(101);
+	KillTimer(102);
+	KillTimer(103);
+}
+void CWarDlg::start() {
+	::SetTimer(this->m_hWnd, 101, 5, NULL);//一号定时器（核心），用来计算我机和敌机位置和画图，
+	::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
+	::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
+}
 void CWarDlg::gameOver() {
 	//我机爆炸
 	Boom b;
@@ -417,10 +477,11 @@ void CWarDlg::gameOver() {
 	KillTimer(103);
 	//开启结算页面
 	state = 2;
+	select = 0;
 
 	//读写最高分
 	CFile file;
-	file.Open("./data/top.txt", CFile::modeReadWrite, NULL);
+	file.Open("./Debug/data/top.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();
 	char *b1 = new char(len + 1);
 	file.Read(b1, len);
@@ -428,9 +489,9 @@ void CWarDlg::gameOver() {
 	top = _ttoi(_T(b1));
 	CString c;
 	if (credits > top) {
-		CFile::Remove("./data/top.txt");
+		CFile::Remove("./Debug/data/top.txt");
 		CFile files;
-		files.Open("./data/top.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		files.Open("./Debug/data/top.txt", CFile::modeCreate | CFile::modeWrite, NULL);
 		c.Format("%d", credits);
 		files.Write(c, c.GetLength());
 		files.Close();
@@ -687,3 +748,4 @@ void CWarDlg::OnSize(UINT nType, int cx, int cy)
 	// TODO: 在此处添加消息处理程序代码
 	//UPDATE_EASYSIZE;
 }
+

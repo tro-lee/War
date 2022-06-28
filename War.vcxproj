@@ -183,6 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Admin.h" />
     <ClInclude Include="AnyThing.h" />
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Boom.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="WarDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Admin.cpp" />
     <ClCompile Include="AnyThing.cpp" />
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Boom.cpp" />

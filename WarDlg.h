@@ -9,6 +9,7 @@
 #include "Bullet.h"
 #include "EasySize.h"
 #include "Arrow.h"
+#include "Admin.h"
 #include <vector>
 
 // CWarDlg 对话框
@@ -21,17 +22,22 @@ private:
 	std::vector<Boom> booms;
 	std::vector<CEnemy> enemy;
 	std::vector<Bullet> bullets;
+	Admin admin;
 public:
 	//CRect rect;
 	//POINT point;
 	int level;
+	int select;
 	int state;//0为开始界面, 1为启动, 4为启动中途
+	BOOL stopState;
 	int mapY;
 	int mapX;
 	int credits;
 	int top;
 	int rollX;
 	int rollY;
+	void stop();
+	void start();
 	void levelEnemy();
 	void levelBullet(CEnemy a);
 	void paintBG(HDC hdc, int x, int y);
@@ -80,4 +86,5 @@ public:
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
