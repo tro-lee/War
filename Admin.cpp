@@ -25,6 +25,16 @@ void Admin::save(CMyRole a)
 
 void Admin::load(CMyRole &a)
 {
+	CFileFind finder;
+	BOOL bWorking = (bool)finder.FindFile("./me.txt");
+	if (!bWorking) {
+		CFile file;
+		file.Open("./me.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		CString c = "625 800 0 0 133";
+		file.Write(c, c.GetLength());
+		file.Close();
+	}
+
 	CFile file;
 	file.Open("./me.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();
@@ -91,12 +101,11 @@ void Admin::load(std::vector<CEnemy>& a)
 		n = strSrc.Find('A');
 
 		if (strSrc[1] == 'B') {
-			i = _ttoi(_T(vecString[0]));
-			a[i].Init(_ttoi(_T(vecString[5])), _ttoi(_T(vecString[3])), _ttoi(_T(vecString[4])), _ttoi(_T(vecString[6])), _ttoi(_T(vecString[7])), _ttoi(_T(vecString[8])), false);
-			a[i].setPosX(_ttoi(_T(vecString[1])));
-			a[i].setPosY(_ttoi(_T(vecString[2])));
+			a[i].Init(_ttoi(_T(vecString[5])), _ttoi(_T(vecString[3])), _ttoi(_T(vecString[4])), _ttoi(_T(vecString[6])), _ttoi(_T(vecString[7])), _ttoi(_T(vecString[8])), false, _ttoi(_T(vecString[1])), _ttoi(_T(vecString[2])));
+			
 			vecString.clear();
-			strSrc = strSrc = strSrc.Right(strSrc.GetLength() - 2);
+			strSrc = strSrc.Right(strSrc.GetLength());
+			i++;
 		}
 
 		step++;
@@ -104,6 +113,16 @@ void Admin::load(std::vector<CEnemy>& a)
 }
 
 int Admin::loadEnemy() {
+	CFileFind finder;
+	BOOL bWorking = (bool)finder.FindFile("./enemy.txt");
+	if (!bWorking) {
+		CFile file;
+		file.Open("./enemy.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		CString c = "";
+		file.Write(c, c.GetLength());
+		file.Close();
+	}
+
 	CFile file;
 	file.Open("./enemy.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();
@@ -141,6 +160,16 @@ void Admin::save(int credits, int level) {
 
 void Admin::load(int &credits, int &level)
 {
+	CFileFind finder;
+	BOOL bWorking = (bool)finder.FindFile("./others.txt");
+	if (!bWorking) {
+		CFile file;
+		file.Open("./others.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		CString c = "0 1";
+		file.Write(c, c.GetLength());
+		file.Close();
+	}
+
 	CFile file;
 	file.Open("./others.txt", CFile::modeReadWrite, NULL);
 	int len = file.GetLength();

@@ -186,6 +186,7 @@
     <ClInclude Include="Admin.h" />
     <ClInclude Include="AnyThing.h" />
     <ClInclude Include="Arrow.h" />
+    <ClInclude Include="BAdmin.h" />
     <ClInclude Include="Boom.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="CEnemy.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Admin.cpp" />
     <ClCompile Include="AnyThing.cpp" />
     <ClCompile Include="Arrow.cpp" />
+    <ClCompile Include="BAdmin.cpp" />
     <ClCompile Include="Boom.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CEnemy.cpp" />
@@ -237,6 +239,7 @@
     <Image Include="res\Good.ico" />
     <Image Include="res\me.bmp" />
     <Image Include="res\numm.bmp" />
+    <Image Include="res\save.bmp" />
     <Image Include="res\test.bmp" />
     <Image Include="res\ui.bmp" />
     <Image Include="res\uii.bmp" />

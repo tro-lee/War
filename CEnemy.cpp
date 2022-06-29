@@ -2,11 +2,11 @@
 #include "CEnemy.h"
 #include "Bullet.h"
 
-void CEnemy::Init(UINT uidL, int speedX, int speedY, int h, int s, int c, BOOL b)
+void CEnemy::Init(UINT uidL, int speedX, int speedY, int h, int s, int c, BOOL b, int posX, int posY)
 {
 	m_hBmp = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)uidL, IMAGE_BITMAP, 0, 0, NULL);
-	m_PosX = rand() % 1000;
-	m_PosY = 0;
+	m_PosX = posX;
+	m_PosY = posY;
 	m_SpeedX = speedX;
 	m_SpeedY = speedY;
 	uid = uidL;
@@ -24,7 +24,7 @@ void CEnemy::Update(int speedX)
 	if(speedX % 3 != 0)
 	m_SpeedX = speedX % 3;
 	if (m_PosX < 0) { m_PosX = 0; };
-	if (m_PosX > 1300) { m_PosX = 1300; };
+	if (m_PosX > 1000) { m_PosX = 1000; };
 	m_PosX += m_SpeedX;
 	m_PosY += m_SpeedY;
 	m_Rect = { m_PosX, m_PosY, m_PosX + size, m_PosY + size };

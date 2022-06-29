@@ -10,6 +10,7 @@
 #include "EasySize.h"
 #include "Arrow.h"
 #include "Admin.h"
+#include "BAdmin.h"
 #include <vector>
 
 // CWarDlg 对话框
@@ -22,6 +23,7 @@ private:
 	std::vector<Boom> booms;
 	std::vector<CEnemy> enemy;
 	std::vector<Bullet> bullets;
+	std::vector<BAdmin> badmins;
 	Admin admin;
 public:
 	//CRect rect;
@@ -38,10 +40,13 @@ public:
 	int rollY;
 	void stop();
 	void start();
+	void bAdmin();
+	void allAdmin(CString a);//功能包实现
 	void levelEnemy();
 	void levelBullet(CEnemy a);
 	void paintBG(HDC hdc, int x, int y);
 	void paintEnemy(HDC hdc);
+	void paintAdmin(HDC hdc);
 	void paintBullet(HDC hdc);
 	void paintCredits(HDC hdc);
 	void paintBoom(HDC hdc);

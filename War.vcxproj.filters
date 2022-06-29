@@ -57,6 +57,9 @@
     <ClInclude Include="Admin.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="BAdmin.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="War.cpp">
@@ -87,6 +90,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Admin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BAdmin.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -156,6 +162,9 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\enemyM.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\save.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

@@ -10,6 +10,7 @@
 #include "afxdialogex.h"
 #include "EasySize.h"
 #include "Admin.h"
+#include "BAdmin.h"
 
 //BEGIN_EASYSIZE_MAP(CWarDlg)
 //	EASYSIZE(IDD_WAR_DIALOG, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, 0)
@@ -62,8 +63,8 @@ CWarDlg::CWarDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	rollX = 0;
 	rollY = 0;
-	mapX = 1500;
-	mapY = 1200;
+	mapX = 1050;
+	mapY = 900;
 	
 	state = 0;
 }
@@ -128,7 +129,7 @@ BOOL CWarDlg::OnInitDialog()
 	//point = rect.BottomRight();
 	::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
 	::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
-	arrow.inint(IDB_BITMAP11, 400, 475);
+	arrow.inint(IDB_BITMAP11, 400, 375);
 	select = 0;
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -199,6 +200,19 @@ void CWarDlg::OnMouseMove(UINT nFlags, CPoint point)
 		if (arrow.aimX >= 1200) {
 			arrow.aimX = 1200;
 		}
+
+		if (point.y <= 375) {
+			select = 0;
+			arrow.aimY = 375;
+		}
+		else if (point.y >= 565) {
+			select = 2;
+			arrow.aimY = 565;
+		}
+		else {
+			select = 1;
+			arrow.aimY = 470;
+		}
 	}
 	CDialogEx::OnMouseMove(nFlags, point);
 }
@@ -211,17 +225,17 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	//控制箭头
 	if (state == 0 && arrow.fire == 0) {
 		if (nChar == 'W') {
-			if (arrow.aimY > 475)
+			if (arrow.aimY > 375)
 			{
 				select--;
-				arrow.aimY -= 130;
+				arrow.aimY -= 95;
 			}
 		}
 		if (nChar == 'S') {
-			if (arrow.aimY < 735)
+			if (arrow.aimY < 565)
 			{
 				select++;
-				arrow.aimY += 130;
+				arrow.aimY += 95;
 			}
 		}
 		if (nChar == ' ') {
@@ -252,6 +266,9 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 				start();
 			}
 		}
+		if (nChar == 'K') {
+			gameOver();
+		}
 	}
 	//控制结束
 	if (state == 2) {
@@ -260,7 +277,7 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			KillTimer(301);
 			::SetTimer(this->m_hWnd, 201, 5, NULL);//201号定时器（开始游戏界面）
 			::SetTimer(this->m_hWnd, 203, 100, NULL);//203号定时器（我机飞机子弹）
-			arrow.inint(IDB_BITMAP11, 400, 475);
+			arrow.inint(IDB_BITMAP11, 300, 375);
 
 			arrow.bullets.clear();
 			me.bullets.clear();
@@ -275,7 +292,6 @@ void CWarDlg::OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	if(state == 1 && nChar == 'P') {
-		stop();
 		admin.save(me);
 		admin.save(enemy);
 		admin.save(credits, level);
@@ -329,7 +345,7 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 			HDC hMDCS = ::CreateCompatibleDC(hDC);
 			HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP10, IMAGE_BITMAP, 0, 0, NULL);
 			::SelectObject(hMDCS, hBmpMap);
-			::TransparentBlt(hMDC, 200, 100, 1000, 800, hMDCS, 0, 0, 400, 300, RGB(0, 0, 0));
+			::TransparentBlt(hMDC, mapX / 7, mapY / 9, 800, 600, hMDCS, 0, 0, 400, 300, RGB(0, 0, 0));
 			//画子弹(成功后)
 			HDC hMDCB = ::CreateCompatibleDC(hDC);
 			for (size_t i = 0; i < arrow.bullets.size(); i++)
@@ -348,7 +364,7 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 		}
 		if (nIDEvent == 203) {
 			if (arrow.fire == 1) {
-				arrow.aimX = 1100;
+				arrow.aimX = mapX - 200;
 				arrow.BulletFire(IDB_BITMAP5);
 			}
 		}
@@ -400,10 +416,10 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 			HDC hMDCS = ::CreateCompatibleDC(hDC);
 			HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP13, IMAGE_BITMAP, 0, 0, NULL);
 			::SelectObject(hMDCS, hBmpMap);
-			::TransparentBlt(hMDC, 100, 300, 500, 400, hMDCS, 0, 0, 1200, 500, RGB(1, 1, 1));
+			::TransparentBlt(hMDC, 100, mapY / 4, 500, 400, hMDCS, 0, 0, 1200, 500, RGB(1, 1, 1));
 			//贴数字
-			paintMath(hMDC, top, 600, 320);
-			paintMath(hMDC, credits, 600, 530);
+			paintMath(hMDC, top, 600, mapY / 4);
+			paintMath(hMDC, credits, 600, mapY / 4 + 220);
 
 			::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
 			::DeleteObject(hBmpMap);
@@ -440,11 +456,11 @@ void CWarDlg::OnOperateStart()
 		for (size_t i = 0; i < a; i++)
 		{
 			CEnemy en;
-			en.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 100, 50, FALSE);
+			en.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 50, 50, FALSE, 0, 0);
 			enemy.push_back(en);
 		}
 		admin.load(enemy);
-		me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
+		me.Init(IDB_BITMAP2, mapX / 2 + 100, mapY - 50);
 		admin.load(me);
 		admin.load(credits, level);
 
@@ -455,7 +471,7 @@ void CWarDlg::OnOperateStart()
 	}
 }
 void CWarDlg::init() {
-	me.Init(IDB_BITMAP2, mapX / 2 - 150, mapY - 200);
+	me.Init(IDB_BITMAP2, mapX / 2 + 100, mapY - 100);
 }
 void CWarDlg::stop() {
 	KillTimer(101);
@@ -478,20 +494,33 @@ void CWarDlg::gameOver() {
 	//开启结算页面
 	state = 2;
 	select = 0;
-
 	//读写最高分
-	CFile file;
-	file.Open("./Debug/data/top.txt", CFile::modeReadWrite, NULL);
-	int len = file.GetLength();
-	char *b1 = new char(len + 1);
-	file.Read(b1, len);
-	file.Close();
-	top = _ttoi(_T(b1));
+
+	CFileFind finder;
+	BOOL bWorking = (bool)finder.FindFile("./top.txt");
+
+	if (!bWorking) {
+		CFile files;
+		files.Open("./top.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		CString c;
+		c.Format("%d", credits);
+		files.Write(c, c.GetLength());
+		files.Close();
+	}
+	else {
+		CFile file;
+		file.Open("./top.txt", CFile::modeReadWrite, NULL);
+		int len = file.GetLength();
+		char* b1 = new char(len + 1);
+		file.Read(b1, len);
+		file.Close();
+		top = _ttoi(_T(b1));
+	}
 	CString c;
 	if (credits > top) {
-		CFile::Remove("./Debug/data/top.txt");
+		CFile::Remove("./top.txt");
 		CFile files;
-		files.Open("./Debug/data/top.txt", CFile::modeCreate | CFile::modeWrite, NULL);
+		files.Open("./top.txt", CFile::modeCreate | CFile::modeWrite, NULL);
 		c.Format("%d", credits);
 		files.Write(c, c.GetLength());
 		files.Close();
@@ -503,6 +532,17 @@ void CWarDlg::gameOver() {
 
 //线程1的更新机制 用来实时计算数值
 void CWarDlg::upDate() {
+	//敌机产生
+	levelEnemy();
+	
+	//功能性包产生
+	bAdmin();
+	
+	//功能性包计算
+	for (size_t i = 0; i < badmins.size(); i++)
+	{
+		badmins[i].Update(mapY - rollY);
+	}
 	//我机计算
 	me.Update();
 
@@ -543,7 +583,7 @@ void CWarDlg::paint() {
 
 	//画背景(滚动)
 	paintBG(hMDC, rollX, rollY);
-	rollY = rollY - 3 + me.GetSpeedY() * 2;
+	rollY = rollY - 3 + me.GetSpeedY();
 	if (rollY <= 0) rollY = mapY;
 	//画分数
 	paintCredits(hMDC);
@@ -551,6 +591,8 @@ void CWarDlg::paint() {
 	me.Draw(hMDC, me.GetPosX(), me.GetPosY());
 	//画敌机(并随机产生)
 	paintEnemy(hMDC);
+	//画系统包
+	paintAdmin(hMDC);
 	//画子弹
 	paintBullet(hMDC);
 	//画爆炸
@@ -588,26 +630,46 @@ void CWarDlg::paintEnemy(HDC hDC) {
 			enemy.erase(enemy.begin() + i);
 		}
 	}
-	levelEnemy();
+	::DeleteDC(hMDC);
+}
+void CWarDlg::paintAdmin(HDC hDC) {
+	HDC hMDC = ::CreateCompatibleDC(hDC);
+	//使用已经有的
+	for (size_t i = 0; i < badmins.size(); i++)
+	{
+		badmins[i].Draw(hDC);
+		//超界删除
+		if (badmins[i].GetPosY() > 850) {
+			badmins.erase(badmins.begin() + i);
+		}
+	}
 	::DeleteDC(hMDC);
 }
 void CWarDlg::levelEnemy() {
 	if (level < 3) level = credits / 1000 + 1;
-	//生成新的敌机 等级一
+	//产生新的敌机 等级一
 	if (rand() % 500 < (4 - level)) {
 		CEnemy a;
-		a.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 100, 50, FALSE);
+		a.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 50, 50, FALSE, rand() % 1000, 0);
 		enemy.push_back(a);
 	}
 	if (rand() % 500 < (level + 1)) {
 		CEnemy a;
-		a.Init(IDB_BITMAP15, 0, 15, 2, 100, 50, FALSE);
+		a.Init(IDB_BITMAP15, 0, 15, 2, 50, 50, FALSE, rand() % 1000, 0);
 		enemy.push_back(a);
 	}
 	if (rand() % 500 < level) {
 		CEnemy a;
-		a.Init(IDB_BITMAP16, 0, rand() % 3 + 3, 50, 200, 100, FALSE);
+		a.Init(IDB_BITMAP16, 0, rand() % 3 + 3, 50, 100, 100, FALSE, rand() % 1000, 0);
 		enemy.push_back(a);
+	}
+}
+void CWarDlg::bAdmin() {
+	//产生Save包
+	if (rand() % 500 < 1) {
+		BAdmin a;
+		a.Init(IDB_BITMAP17, "save", rand() % 1000, 10);
+		badmins.push_back(a);
 	}
 }
 void CWarDlg::levelBullet(CEnemy a) {
@@ -686,6 +748,14 @@ void CWarDlg::crash() {
 			enemy.erase(enemy.begin() + i);
 		}
 	}
+	//功能包撞飞机
+	for (size_t i = 0; i < badmins.size(); i++)
+	{
+		if (judgeMe(&badmins[i].m_Rect)) {
+			allAdmin(badmins[i].type);
+			badmins.erase(badmins.begin() + i);
+		}
+	}
 	//敌人撞子弹
 	for (size_t i = 0; i < enemy.size(); i++)
 	{
@@ -732,12 +802,19 @@ BOOL CWarDlg::judgeBullet(POINT a) {
 }
 BOOL CWarDlg::judgeMe(const RECT* e) {
 	if (PtInRect(e, { me.GetPosX(), me.GetPosY()})
-		|| PtInRect(e, { me.GetPosX() + 50, me.GetPosY() })
-		|| PtInRect(e, { me.GetPosX() + 50, me.GetPosY() + 100 })
-		|| PtInRect(e, { me.GetPosX(), me.GetPosY() + 100 })
-		|| PtInRect(e, { me.GetPosX() + 50, me.GetPosY() })
+		|| PtInRect(e, { me.GetPosX() + 25, me.GetPosY() })
+		|| PtInRect(e, { me.GetPosX() + 25, me.GetPosY() + 50 })
+		|| PtInRect(e, { me.GetPosX(), me.GetPosY() + 50 })
+		|| PtInRect(e, { me.GetPosX() + 25, me.GetPosY() })
 		) return TRUE;
 	return FALSE;
+}
+void CWarDlg::allAdmin(CString a) {
+	if (a == "save") {
+		admin.save(me);
+		admin.save(enemy);
+		admin.save(credits, level);
+	}
 }
 
 //废掉
