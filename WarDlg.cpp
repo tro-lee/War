@@ -11,6 +11,7 @@
 #include "EasySize.h"
 #include "Admin.h"
 #include "BAdmin.h"
+#include "CMyRoleSign.h"
 
 //BEGIN_EASYSIZE_MAP(CWarDlg)
 //	EASYSIZE(IDD_WAR_DIALOG, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, 0)
@@ -269,6 +270,18 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		if (nChar == 'K') {
 			gameOver();
 		}
+		if (nChar == ' ') {
+			//生成阴影
+			for (size_t i = 0; i < 5; i++)
+			{
+				CMyRoleSign s;
+				s.Init(IDB_BITMAP26, me.GetPosX() + 6 * i * me.GetSpeedX(), me.GetPosY() + 6 * i * me.GetSpeedY(), me.GetSpeedX(), me.GetSpeedY());
+				signs.push_back(s);
+			}
+			//位置
+			me.setPosX(me.GetPosX() + me.GetSpeedX() * 30);
+			me.setPosY(me.GetPosY() + me.GetSpeedY() * 30);
+		}
 	}
 	//控制结束
 	if (state == 2) {
@@ -280,6 +293,7 @@ void CWarDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			arrow.inint(IDB_BITMAP11, 300, 375);
 
 			arrow.bullets.clear();
+			signs.clear();
 			me.bullets.clear();
 			bullets.clear();
 			enemy.clear();
@@ -567,6 +581,15 @@ void CWarDlg::upDate() {
 		me.bullets[j].Update();
 	}
 	
+	//我机影子计算
+	for (size_t i = 0; i < signs.size(); i++)
+	{
+		signs[i].Update();
+		if (signs[i].move > 50) {
+			signs.erase(signs.begin() + i);
+		}
+	}
+
 	//敌机子弹
 	for (size_t j = 0; j < bullets.size(); j++)
 	{
@@ -583,6 +606,9 @@ void CWarDlg::upDate() {
 		if (rand() % 100 < 1) {
 			if (enemy[i].hp > 100) {
 				enemy[i].setSpeedY(15);
+			}
+			else if (enemy[i].hp > 50) {
+				enemy[i].setSpeedY(enemy[i].GetSpeedY() + 5);
 			}
 		}
 	}
@@ -605,6 +631,11 @@ void CWarDlg::paint() {
 	paintCredits(hMDC);
 	//画本机(直接画)
 	me.Draw(hMDC, me.GetPosX(), me.GetPosY());
+	//画影子(直接画)
+	for (size_t i = 0; i < signs.size(); i++)
+	{
+		signs[i].Draw(hMDC, signs[i].GetPosX(), signs[i].GetPosY());
+	}
 	//画敌机(并随机产生)
 	paintEnemy(hMDC);
 	//画系统包

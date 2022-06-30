@@ -7,9 +7,9 @@ class CMyRole: public AnyThing
 private:
 public:
 	std::vector<Bullet> bullets;
-	void Init(UINT uiID, int x, int y);
-	void Update();
+	virtual void Init(UINT uiID, int x, int y);
+	virtual void Update();
 	void BulletFire(UINT uid);
-	void Draw(HDC hDC, int x, int y);
+	virtual void Draw(HDC hDC, int x, int y);
 };
 

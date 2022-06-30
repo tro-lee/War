@@ -11,6 +11,7 @@
 #include "Arrow.h"
 #include "Admin.h"
 #include "BAdmin.h"
+#include "CMyRoleSign.h"
 #include <vector>
 
 // CWarDlg 对话框
@@ -24,6 +25,7 @@ private:
 	std::vector<CEnemy> enemy;
 	std::vector<Bullet> bullets;
 	std::vector<BAdmin> badmins;
+	std::vector<CMyRoleSign> signs;
 	Admin admin;
 public:
 	//CRect rect;

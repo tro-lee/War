@@ -191,6 +191,7 @@
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="CEnemy.h" />
     <ClInclude Include="CMyRole.h" />
+    <ClInclude Include="CMyRoleSign.h" />
     <ClInclude Include="EasySize.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
@@ -208,6 +209,7 @@
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="CEnemy.cpp" />
     <ClCompile Include="CMyRole.cpp" />
+    <ClCompile Include="CMyRoleSign.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -244,6 +246,7 @@
     <Image Include="res\explosion.BMP" />
     <Image Include="res\Good.ico" />
     <Image Include="res\me.bmp" />
+    <Image Include="res\meSign.bmp" />
     <Image Include="res\numm.bmp" />
     <Image Include="res\save.bmp" />
     <Image Include="res\saveEvent.bmp" />

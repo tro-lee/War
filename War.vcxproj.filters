@@ -60,6 +60,9 @@
     <ClInclude Include="BAdmin.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CMyRoleSign.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="War.cpp">
@@ -93,6 +96,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="BAdmin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CMyRoleSign.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -189,6 +195,9 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\up.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\meSign.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>
