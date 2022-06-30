@@ -28,6 +28,8 @@ private:
 public:
 	//CRect rect;
 	//POINT point;
+	CString showWhat;
+	int show;
 	int level;
 	int select;
 	int state;//0为开始界面, 1为启动, 4为启动中途
@@ -51,6 +53,7 @@ public:
 	void paintCredits(HDC hdc);
 	void paintBoom(HDC hdc);
 	void paintMath(HDC hdc, int a, int x, int y);
+	void paintEvent(HDC hdc);
 	void paint();
 	void init();
 	void upDate();

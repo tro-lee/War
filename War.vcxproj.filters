@@ -167,5 +167,29 @@
     <Image Include="res\save.bmp">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="res\enemyB.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\enemyX.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\enemyA.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\enemyL.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\enemyLK.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\enemyLL.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\saveEvent.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\up.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

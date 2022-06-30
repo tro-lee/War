@@ -396,6 +396,15 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 		if (nIDEvent == 103) {
 			me.BulletFire(IDB_BITMAP5);
 		}
+		if (nIDEvent == 501) {
+			show = 1;
+			KillTimer(501);
+			::SetTimer(this->m_hWnd, 502, 2000, NULL);
+		}
+		if (nIDEvent == 502) {
+			show = 0;
+			KillTimer(502);
+		}
 	}
 
 	//结束界面
@@ -416,10 +425,10 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 			HDC hMDCS = ::CreateCompatibleDC(hDC);
 			HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP13, IMAGE_BITMAP, 0, 0, NULL);
 			::SelectObject(hMDCS, hBmpMap);
-			::TransparentBlt(hMDC, 100, mapY / 4, 500, 400, hMDCS, 0, 0, 1200, 500, RGB(1, 1, 1));
+			::TransparentBlt(hMDC, 50, mapY / 4, 400, 300, hMDCS, 0, 0, 1200, 500, RGB(1, 1, 1));
 			//贴数字
-			paintMath(hMDC, top, 600, mapY / 4);
-			paintMath(hMDC, credits, 600, mapY / 4 + 220);
+			paintMath(hMDC, top, 450, mapY / 4 + 10);
+			paintMath(hMDC, credits, 450, mapY / 4 + 170);
 
 			::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
 			::DeleteObject(hBmpMap);
@@ -535,10 +544,10 @@ void CWarDlg::upDate() {
 	//敌机产生
 	levelEnemy();
 	
-	//功能性包产生
+	//功能包产生
 	bAdmin();
 	
-	//功能性包计算
+	//功能包计算
 	for (size_t i = 0; i < badmins.size(); i++)
 	{
 		badmins[i].Update(mapY - rollY);
@@ -569,6 +578,13 @@ void CWarDlg::upDate() {
 	{
 		enemy[i].Update(me.GetPosX() - enemy[i].GetPosX());
 		levelBullet(enemy[i]);
+
+		//根据血量判断精英
+		if (rand() % 100 < 1) {
+			if (enemy[i].hp > 100) {
+				enemy[i].setSpeedY(15);
+			}
+		}
 	}
 }
 
@@ -599,6 +615,10 @@ void CWarDlg::paint() {
 	paintBoom(hMDC);
 	//画关卡
 	paintMath(hMDC, level, 20, 50);
+	//画数字
+	if (show == 1) {
+		paintEvent(hMDC);
+	}
 	//最后绘制
 	::BitBlt(hDC, 0, 0, mapX, mapY, hMDC, 0, 0, SRCCOPY);
 	::ReleaseDC(this->m_hWnd, hDC);
@@ -646,21 +666,67 @@ void CWarDlg::paintAdmin(HDC hDC) {
 	::DeleteDC(hMDC);
 }
 void CWarDlg::levelEnemy() {
-	if (level < 3) level = credits / 1000 + 1;
-	//产生新的敌机 等级一
-	if (rand() % 500 < (4 - level)) {
+	//关卡设计
+	if (credits / 500 + 1 > level) {
+		showWhat = "up";
+		::SetTimer(this->m_hWnd, 501, 5, NULL);
+		level = credits / 500 + 1;
+	}
+	
+	int sym = 1;
+	//随机正负
+	if (rand() % 100 < 50) {
+		sym = -1;
+	}
+	//第一种小普通飞机
+	if (rand() % 500 < (level % 3 + 1) * (level % 5 + 1)) {//频率为第一关
+		int size = 50 + sym * (rand() % 2) * 20 + (rand() % 2) * 20 + level; //尺寸中等
+		int hp = size / 10? size / 10: 1 + level; //血量中等
 		CEnemy a;
-		a.Init(IDB_BITMAP3, 0, rand() % 3 + 3, 1, 50, 50, FALSE, rand() % 1000, 0);
+		if (rand() % 4 < 1) {
+			a.Init(IDB_BITMAP3, 0, rand() % 2 + level, hp, size, size, FALSE, rand() % 1000, 0);
+		}
+		else if (rand() % 4 < 1) {
+			a.Init(IDB_BITMAP21, 0, rand() % 2 + level, hp, size, size, FALSE, rand() % 1000, 0);
+		}
+		else if (rand() % 4 < 1) {
+			a.Init(IDB_BITMAP22, 0, rand() % 2 + level, hp, size, size, FALSE, rand() % 1000, 0);
+		}
+		else {
+			a.Init(IDB_BITMAP23, 0, rand() % 2 + level, hp, size, size, FALSE, rand() % 1000, 0);
+		}
 		enemy.push_back(a);
 	}
-	if (rand() % 500 < (level + 1)) {
+	//第二种小黑U飞机
+	if (rand() % 1500 < (level / 2 == 0? 3: 1) * (level / 5)) {
+		int size = 80 - (rand() % 20);
+		int spX = rand() % 5 + level * 2;
 		CEnemy a;
-		a.Init(IDB_BITMAP15, 0, 15, 2, 50, 50, FALSE, rand() % 1000, 0);
+		a.Init(IDB_BITMAP15, 0, spX, 2, size, spX, FALSE, rand() % 1000, 0);
 		enemy.push_back(a);
 	}
-	if (rand() % 500 < level) {
+	//第三种小白飞机
+	if (rand() % 2000 < (level / 3 == 0 ? 5: 1) * (level / 5)) {
+		int size = 75 + (rand() % 2) * 40 + level * 3;
+		int hp = size / 2;
 		CEnemy a;
-		a.Init(IDB_BITMAP16, 0, rand() % 3 + 3, 50, 100, 100, FALSE, rand() % 1000, 0);
+		a.Init(IDB_BITMAP16, 0, rand() % 2 + 1, hp, size, hp, FALSE, rand() % 1000, 0);
+		enemy.push_back(a);
+	}
+	//精英飞机
+	if (rand() % 2000 < (level / 3)) {
+		int size = 75 + (rand() % 3) * 40 + level * 3;
+		int hp = size;
+		CEnemy a;
+		if (rand() % 3 < 1) {
+			a.Init(IDB_BITMAP18, 0, rand() % 2, hp, size, size, FALSE, rand() % 1000, 0);
+		}
+		else if (rand() % 3 < 1) {
+			a.Init(IDB_BITMAP19, 0, rand() % 2, hp, size, size, FALSE, rand() % 1000, 0);
+		}
+		else {
+			a.Init(IDB_BITMAP20, 0, rand() % 2, hp, size, size, FALSE, rand() % 1000, 0);
+		}
 		enemy.push_back(a);
 	}
 }
@@ -674,10 +740,17 @@ void CWarDlg::bAdmin() {
 }
 void CWarDlg::levelBullet(CEnemy a) {
 	//时不时产生子弹
-	if (rand() % 200 < (a.credit / 10 + level)) {
+	if (rand() % 1000 < (level)) {
 		Bullet b;
 		b.Init(IDB_BITMAP5, a.GetPosX() + a.size / 2, a.GetPosY() + a.size, a.GetSpeedY(), me.GetPosX() - a.GetPosX());
 		bullets.push_back(b);
+	}
+	if (rand() % 200 < (level)) {
+		if (a.hp > 100) {
+			Bullet b;
+			b.Init(IDB_BITMAP5, a.GetPosX() + a.size / 2, a.GetPosY() + a.size, a.GetSpeedY(), me.GetPosX() - a.GetPosX());
+			bullets.push_back(b);
+		}
 	}
 }
 void CWarDlg::paintBullet(HDC hDC) {
@@ -711,6 +784,24 @@ void CWarDlg::paintBG(HDC hDC, int x, int y) {
 	::DeleteDC(hMDC);
 	::DeleteObject(hBmpMap);
 }
+void CWarDlg::paintEvent(HDC hDC) {
+	if (showWhat == "save") {
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP24, IMAGE_BITMAP, 0, 0, NULL);
+		HDC hMDC = ::CreateCompatibleDC(hDC);
+		::SelectObject(hMDC, hBmpMap);
+		::TransparentBlt(hDC, 0, 0, 1000, 800, hMDC, 0, 0, 1050, 800, RGB(0, 0, 0));
+		::DeleteDC(hMDC);
+		::DeleteObject(hBmpMap);
+	}
+	if (showWhat == "up") {
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP25, IMAGE_BITMAP, 0, 0, NULL);
+		HDC hMDC = ::CreateCompatibleDC(hDC);
+		::SelectObject(hMDC, hBmpMap);
+		::TransparentBlt(hDC, 0, 0, 1000, 800, hMDC, 0, 0, 1000, 700, RGB(0, 0, 0));
+		::DeleteDC(hMDC);
+		::DeleteObject(hBmpMap);
+	}
+}
 void CWarDlg::paintCredits(HDC hDC) {
 	CString s;
 	s.Format("积分%d", credits);
@@ -733,7 +824,7 @@ void CWarDlg::paintMath(HDC hDC, int num, int x, int y) {
 
 		int j = a[i] - '0';
 		
-		::TransparentBlt(hDC, x + 120 * i, y, 100, 100, hMDC, 120 * j, 0, 120, 120, RGB(1, 1, 1));
+		::TransparentBlt(hDC, x + 75 * i, y, 75, 75, hMDC, 120 * j, 0, 120, 120, RGB(1, 1, 1));
 		::DeleteDC(hMDC);
 		::DeleteObject(hBmpMap);
 	}
@@ -814,6 +905,8 @@ void CWarDlg::allAdmin(CString a) {
 		admin.save(me);
 		admin.save(enemy);
 		admin.save(credits, level);
+		showWhat = "save";
+		::SetTimer(this->m_hWnd, 501, 5, NULL);
 	}
 }
 

@@ -233,16 +233,24 @@
     <Image Include="res\bitmap4.bmp" />
     <Image Include="res\bomb1.bmp" />
     <Image Include="res\enemy.bmp" />
+    <Image Include="res\enemyA.bmp" />
+    <Image Include="res\enemyB.bmp" />
+    <Image Include="res\enemyL.bmp" />
+    <Image Include="res\enemyLK.bmp" />
+    <Image Include="res\enemyLL.bmp" />
     <Image Include="res\enemyM.bmp" />
     <Image Include="res\enemyW.bmp" />
+    <Image Include="res\enemyX.bmp" />
     <Image Include="res\explosion.BMP" />
     <Image Include="res\Good.ico" />
     <Image Include="res\me.bmp" />
     <Image Include="res\numm.bmp" />
     <Image Include="res\save.bmp" />
+    <Image Include="res\saveEvent.bmp" />
     <Image Include="res\test.bmp" />
     <Image Include="res\ui.bmp" />
     <Image Include="res\uii.bmp" />
+    <Image Include="res\up.bmp" />
     <Image Include="res\War.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
