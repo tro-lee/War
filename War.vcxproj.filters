@@ -63,6 +63,9 @@
     <ClInclude Include="CMyRoleSign.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HelpDialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="War.cpp">
@@ -99,6 +102,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CMyRoleSign.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpDialog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -198,6 +204,15 @@
       <Filter>资源文件</Filter>
     </Image>
     <Image Include="res\meSign.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\rush.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\strenth.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="res\rushEvent.bmp">
       <Filter>资源文件</Filter>
     </Image>
   </ItemGroup>

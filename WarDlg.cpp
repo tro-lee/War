@@ -12,6 +12,7 @@
 #include "Admin.h"
 #include "BAdmin.h"
 #include "CMyRoleSign.h"
+#include "HelpDialog.h"
 
 //BEGIN_EASYSIZE_MAP(CWarDlg)
 //	EASYSIZE(IDD_WAR_DIALOG, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, ES_KEEPSIZE, 0)
@@ -53,9 +54,14 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
+void CWarDlg::OnHelp32777()
+{
+	// TODO: 在此添加命令处理程序代码
+	HelpDialog dlg;
+	dlg.DoModal();
+}
 
 // CWarDlg 对话框
-
 
 
 CWarDlg::CWarDlg(CWnd* pParent /*=nullptr*/)
@@ -92,6 +98,7 @@ ON_WM_KEYUP()
 ON_WM_SIZE()
 ON_WM_MOUSEMOVE()
 ON_WM_SYSKEYDOWN()
+ON_COMMAND(ID_HELP_32777, &CWarDlg::OnHelp32777)
 END_MESSAGE_MAP()
 
 
@@ -410,6 +417,7 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 		if (nIDEvent == 103) {
 			me.BulletFire(IDB_BITMAP5);
 		}
+		//显示字体
 		if (nIDEvent == 501) {
 			show = 1;
 			KillTimer(501);
@@ -418,6 +426,17 @@ void CWarDlg::OnTimer(UINT_PTR nIDEvent)
 		if (nIDEvent == 502) {
 			show = 0;
 			KillTimer(502);
+		}
+		if (nIDEvent == 5031) {
+			credits += 4;
+			me.bullets.clear();
+			enemy.clear();
+			bullets.clear();
+		}
+		if (nIDEvent == 503) {
+			mapSpeed = 0;
+			KillTimer(503);
+			KillTimer(5031);
 		}
 	}
 
@@ -464,6 +483,7 @@ void CWarDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CWarDlg::OnOperateStart()
 {
+	mapSpeed = 0;
 	// TODO: 在此添加命令处理程序代码
 	if (select == 0) {
 		init();
@@ -625,7 +645,7 @@ void CWarDlg::paint() {
 
 	//画背景(滚动)
 	paintBG(hMDC, rollX, rollY);
-	rollY = rollY - 3 + me.GetSpeedY();
+	rollY = rollY - 3 + me.GetSpeedY() - mapSpeed;
 	if (rollY <= 0) rollY = mapY;
 	//画分数
 	paintCredits(hMDC);
@@ -768,6 +788,12 @@ void CWarDlg::bAdmin() {
 		a.Init(IDB_BITMAP17, "save", rand() % 1000, 10);
 		badmins.push_back(a);
 	}
+	//产生rush包
+	if (rand() % 700 < 1) {
+		BAdmin b;
+		b.Init(IDB_BITMAP29, "rush", rand() % 1000, 10);
+		badmins.push_back(b);
+	}
 }
 void CWarDlg::levelBullet(CEnemy a) {
 	//时不时产生子弹
@@ -826,6 +852,22 @@ void CWarDlg::paintEvent(HDC hDC) {
 	}
 	if (showWhat == "up") {
 		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP25, IMAGE_BITMAP, 0, 0, NULL);
+		HDC hMDC = ::CreateCompatibleDC(hDC);
+		::SelectObject(hMDC, hBmpMap);
+		::TransparentBlt(hDC, 0, 0, 1000, 800, hMDC, 0, 0, 1000, 700, RGB(0, 0, 0));
+		::DeleteDC(hMDC);
+		::DeleteObject(hBmpMap);
+	}
+	if (showWhat == "rush") {
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP27, IMAGE_BITMAP, 0, 0, NULL);
+		HDC hMDC = ::CreateCompatibleDC(hDC);
+		::SelectObject(hMDC, hBmpMap);
+		::TransparentBlt(hDC, 0, 0, 1000, 800, hMDC, 0, 0, 1000, 700, RGB(0, 0, 0));
+		::DeleteDC(hMDC);
+		::DeleteObject(hBmpMap);
+	}
+	if (showWhat == "strenth") {
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP28, IMAGE_BITMAP, 0, 0, NULL);
 		HDC hMDC = ::CreateCompatibleDC(hDC);
 		::SelectObject(hMDC, hBmpMap);
 		::TransparentBlt(hDC, 0, 0, 1000, 800, hMDC, 0, 0, 1000, 700, RGB(0, 0, 0));
@@ -939,6 +981,13 @@ void CWarDlg::allAdmin(CString a) {
 		showWhat = "save";
 		::SetTimer(this->m_hWnd, 501, 5, NULL);
 	}
+	if (a == "rush") {
+		mapSpeed = 40;
+		showWhat = "rush";
+		::SetTimer(this->m_hWnd, 501, 5, NULL);
+		::SetTimer(this->m_hWnd, 5031, 5, NULL);
+		::SetTimer(this->m_hWnd, 503, 2000, NULL);//关闭
+	}
 }
 
 //废掉
@@ -949,4 +998,6 @@ void CWarDlg::OnSize(UINT nType, int cx, int cy)
 	// TODO: 在此处添加消息处理程序代码
 	//UPDATE_EASYSIZE;
 }
+
+
 

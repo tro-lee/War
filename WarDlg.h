@@ -31,6 +31,7 @@ public:
 	//CRect rect;
 	//POINT point;
 	CString showWhat;
+	int mapSpeed;
 	int show;
 	int level;
 	int select;
@@ -97,4 +98,5 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnSysKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnHelp32777();
 };
