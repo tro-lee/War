@@ -512,6 +512,9 @@ void CWarDlg::OnOperateStart()
 		::SetTimer(this->m_hWnd, 102, 5, NULL);//二号定时器（碰撞 爆炸）
 		::SetTimer(this->m_hWnd, 103, 200, NULL);//三号定时器（发射子弹）
 	}
+	if (select == 2) {
+		PostQuitMessage(0);
+	}
 }
 void CWarDlg::init() {
 	me.Init(IDB_BITMAP2, mapX / 2 + 100, mapY - 100);
@@ -791,7 +794,7 @@ void CWarDlg::bAdmin() {
 	//产生rush包
 	if (rand() % 700 < 1) {
 		BAdmin b;
-		b.Init(IDB_BITMAP29, "rush", rand() % 1000, 10);
+		b.Init(IDB_BITMAP31, "rush", rand() % 1000, 10);
 		badmins.push_back(b);
 	}
 }
@@ -859,7 +862,7 @@ void CWarDlg::paintEvent(HDC hDC) {
 		::DeleteObject(hBmpMap);
 	}
 	if (showWhat == "rush") {
-		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP27, IMAGE_BITMAP, 0, 0, NULL);
+		HBITMAP hBmpMap = (HBITMAP)::LoadImage(::GetModuleHandle(NULL), (LPCSTR)IDB_BITMAP30, IMAGE_BITMAP, 0, 0, NULL);
 		HDC hMDC = ::CreateCompatibleDC(hDC);
 		::SelectObject(hMDC, hBmpMap);
 		::TransparentBlt(hDC, 0, 0, 1000, 800, hMDC, 0, 0, 1000, 700, RGB(0, 0, 0));
