@@ -184,6 +184,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Admin.h" />
+    <ClInclude Include="AFirst.h" />
     <ClInclude Include="AnyThing.h" />
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="BAdmin.h" />
@@ -203,6 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Admin.cpp" />
+    <ClCompile Include="AFirst.cpp" />
     <ClCompile Include="AnyThing.cpp" />
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="BAdmin.cpp" />
